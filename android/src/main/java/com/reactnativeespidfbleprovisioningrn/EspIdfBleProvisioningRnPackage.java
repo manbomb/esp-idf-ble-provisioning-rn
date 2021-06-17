@@ -21,11 +21,6 @@ public class EspIdfBleProvisioningRnPackage implements ReactPackage {
         return modules;
     }
 
-   @Override
-    public List<Class<? extends JavaScriptModule>> createJSModules() {
-      return null;
-    }
-
     @Override
     public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
         return Collections.emptyList();

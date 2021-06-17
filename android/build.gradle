@@ -21,7 +21,7 @@ android {
     compileSdkVersion safeExtGet('EspIdfBleProvisioningRn_compileSdkVersion', 29)
     buildToolsVersion safeExtGet('EspIdfBleProvisioningRn_buildToolsVersion', '29.0.2')
     defaultConfig {
-        minSdkVersion safeExtGet('EspIdfBleProvisioningRn_minSdkVersion', 16)
+        minSdkVersion safeExtGet('EspIdfBleProvisioningRn_minSdkVersion', 23)
         targetSdkVersion safeExtGet('EspIdfBleProvisioningRn_targetSdkVersion', 29)
         versionCode 1
         versionName "1.0"
@@ -50,9 +50,12 @@ repositories {
     }
     google()
     jcenter()
+    maven { url 'https://www.jitpack.io' }
 }
 
 dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation "com.github.espressif:esp-idf-provisioning-android:lib-2.0.9"
+    implementation "org.greenrobot:eventbus:3.1.1"
 }

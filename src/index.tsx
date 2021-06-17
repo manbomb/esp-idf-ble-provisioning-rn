@@ -6,4 +6,4 @@ type EspIdfBleProvisioningRnType = {
 
 const { EspIdfBleProvisioningRn } = NativeModules;
 
-export default EspIdfBleProvisioningRn as EspIdfBleProvisioningRnType;
+export default EspIdfBleProvisioningRn;

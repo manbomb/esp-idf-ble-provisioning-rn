@@ -210,7 +210,7 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
       provisionManager.searchBleEspDevices(prefix, bleScanListener);
     } catch (Exception e) {
       Log.e(TAG, "Error on Init scan method");
-      promiseScan.reject("Error on Init scan method",
+      promise.reject("Error on Init scan method",
         "Init scan method has failed", e);
     }
   }

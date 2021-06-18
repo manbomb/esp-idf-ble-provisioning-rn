@@ -16,6 +16,7 @@ import com.espressif.provisioning.ESPProvisionManager;
 import com.espressif.provisioning.WiFiAccessPoint;
 import com.espressif.provisioning.listeners.BleScanListener;
 import com.espressif.provisioning.listeners.ProvisionListener;
+import com.espressif.provisioning.listeners.ResponseListener;
 import com.espressif.provisioning.listeners.WiFiScanListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
-    public EspIdfBleProvisioningRnModule(ReactApplicationContext reactContext) {
+  public EspIdfBleProvisioningRnModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.context = reactContext;
     }
@@ -53,6 +54,7 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
   private Promise promiseConnection;
   private Promise promiseNetworkScan;
   private Promise promiseNetworkProvision;
+  private Promise promiseCustomDataProvision;
 
   BleScanListener bleScanListener = new BleScanListener() {
     @Override
@@ -186,6 +188,22 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
     }
   };
 
+  ResponseListener responseCustomDataListener = new ResponseListener() {
+    @Override
+    public void onSuccess(byte[] returnData) {
+      WritableMap response = Arguments.createMap();
+      response.putBoolean("success", true);
+      promiseCustomDataProvision.resolve(response);
+    }
+
+    @Override
+    public void onFailure(Exception e) {
+      Log.e(TAG, "Custom data provision is failed", e);
+      promiseCustomDataProvision.reject("Error in custom data provisioning",
+        "Custom data provision is failed", e);
+    }
+  };
+
   @ReactMethod
   public void create() {
     try {
@@ -270,6 +288,20 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
       promise.reject("Networks scan init error",
         "An error has occurred in initialization of networks scan",
         e);
+    }
+  }
+
+  @ReactMethod
+  public void sendCustomData(String customEndPoint, String customData, Promise promise) {
+    try {
+      provisionManager.getEspDevice().sendDataToCustomEndPoint(customEndPoint,
+        customData.getBytes(),
+        responseCustomDataListener);
+      this.promiseCustomDataProvision = promise;
+    } catch (Exception e) {
+      Log.e(TAG, "Custom data provision error", e);
+      promise.reject("Custom data provision error",
+        "An error has occurred in init of provisioning of custom data", e);
     }
   }
 

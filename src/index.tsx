@@ -1,14 +1,14 @@
 import { NativeModules } from 'react-native';
 
-type EspIdfBleProvisioningRnType = {
+interface EspIdfBleProvisioningRnType {
   create(): void;
-  scanBleDevices(prefix: String): Promise<Array<Object>>;
-  setProofOfPossession(proof: String): void;
-  getProofOfPossession(): Promise<String>;
-  connectToBLEDevice(uuid: String): Promise<Object>;
+  scanBleDevices(prefix: string): Promise<Array<Object>>;
+  setProofOfPossession(proof: string): void;
+  getProofOfPossession(): Promise<string>;
+  connectToBLEDevice(uuid: string): Promise<Object>;
   scanNetworks(): Promise<Array<Object>>;
-  sendCustomData(customEndPoint: String, customData: String): Promise<Object>;
-  provisionNetwork(ssid: String, password: String): Promise<Object>;
+  sendCustomData(customEndPoint: string, customData: string): Promise<Object>;
+  provisionNetwork(ssid: string, password: string): Promise<Object>;
 };
 
 const { EspIdfBleProvisioningRn } = NativeModules;

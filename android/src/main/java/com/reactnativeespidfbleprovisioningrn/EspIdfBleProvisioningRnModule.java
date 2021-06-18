@@ -35,7 +35,7 @@ import java.util.HashMap;
 public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
     public EspIdfBleProvisioningRnModule(ReactApplicationContext reactContext) {
         super(reactContext);
-        this.context = context;
+        this.context = reactContext;
     }
 
   private static final String TAG = "NAT. MOD. ESP PROV::";
@@ -84,11 +84,11 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
           listDevicesByUuid.put(serviceUuid, device);
         }
       } catch (Exception e) {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getCurrentActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
           return;
         }
         ESPProvisionManager.getInstance(context).stopBleScan();
-        Log.e(TAG, "Error on Peripheral found");
+        Log.e(TAG, "Error on Peripheral found", e);
         promiseScan.reject("Device found error",
           "An error has occurred while scanning", e);
       }
@@ -102,7 +102,7 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
 
     @Override
     public void onFailure(Exception e) {
-      Log.e(TAG, "Scan fail");
+      Log.e(TAG, "Scan fail", e);
       promiseScan.reject("Scan BLE error", "Scan BLE devices Failed", e);
     }
   };
@@ -133,7 +133,7 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
   ProvisionListener provisionListener = new ProvisionListener() {
     @Override
     public void createSessionFailed(Exception e) {
-      Log.e(TAG, "Session creation is failed");
+      Log.e(TAG, "Session creation is failed", e);
       promiseNetworkProvision.reject("Error in provision listener",
         "Session creation is failed", e);
     }
@@ -145,7 +145,7 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
 
     @Override
     public void wifiConfigFailed(Exception e) {
-      Log.e(TAG, "Wi-Fi credentials failed to send to the device");
+      Log.e(TAG, "Wi-Fi credentials failed to send to the device", e);
       promiseNetworkProvision.reject("Error in provision listener",
         "Wi-Fi credentials failed to send to the device", e);
     }
@@ -157,7 +157,7 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
 
     @Override
     public void wifiConfigApplyFailed(Exception e) {
-      Log.e(TAG, "Wi-Fi credentials failed to apply to the device");
+      Log.e(TAG, "Wi-Fi credentials failed to apply to the device", e);
       promiseNetworkProvision.reject("Error in provision listener",
         "Wi-Fi credentials failed to apply to the device", e);
     }
@@ -180,7 +180,7 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
 
     @Override
     public void onProvisioningFailed(Exception e) {
-      Log.e(TAG, "Provisioning is failed");
+      Log.e(TAG, "Provisioning is failed", e);
       promiseNetworkProvision.reject("Error in provision listener",
         "Provisioning is failed", e);
     }
@@ -193,14 +193,19 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
       EventBus.getDefault().register(this);
       Log.e(TAG, "Create method");
     } catch (Exception e) {
-      Log.e(TAG, "Error on Create method");
+      Log.e(TAG, "Error on Create method", e);
     }
   }
 
   @ReactMethod
   public void scanBleDevices(String prefix, Promise promise) {
     try {
-      if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+      if (ActivityCompat.checkSelfPermission(getCurrentActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+        ActivityCompat.checkSelfPermission(getCurrentActivity(), Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED ||
+        ActivityCompat.checkSelfPermission(getCurrentActivity(), Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
+        promise.reject("Permissions not granted",
+          "Required permissions: ACCESS_FINE_LOCATION, BLUETOOTH, BLUETOOTH_ADMIN",
+          new Exception());
         return;
       }
       Log.e(TAG, "Scan started");
@@ -209,7 +214,7 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
       listDeviceNamesByUuid = Arguments.createArray();
       provisionManager.searchBleEspDevices(prefix, bleScanListener);
     } catch (Exception e) {
-      Log.e(TAG, "Error on Init scan method");
+      Log.e(TAG, "Error on Init scan method", e);
       promise.reject("Error on Init scan method",
         "Init scan method has failed", e);
     }
@@ -242,7 +247,7 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
       promiseConnection = promise;
       promiseConnectionFinished = false;
     } catch (Exception e) {
-      Log.e(TAG, "Error trying to connect to device");
+      Log.e(TAG, "Error trying to connect to device", e);
       promise.reject("Error trying to connect to device",
         "An error has occurred while creation or connection of device",
         e);

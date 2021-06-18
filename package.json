@@ -1,6 +1,6 @@
 {
   "name": "react-native-esp-idf-ble-provisioning-rn",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A module to do wifi/custom data provisioning to ESP IDF",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

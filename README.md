@@ -1,20 +1,29 @@
 # react-native-esp-idf-ble-provisioning-rn
 
 A module to do wifi/custom data provisioning to ESP IDF.
+<br/><br/>
 
 ## Installation
 
 ```sh
 npm install react-native-esp-idf-ble-provisioning-rn
 ```
+<br/>
 
 ## Minimum SDK Version
 
 This module requires a minimum sdk version of 23 or higher. Look this page if you need help to do this:
-[How to specify the minSdkVersion in react native project
-](https://stackoverflow.com/questions/51503218/how-to-specify-the-minsdkversion-in-react-native-project)
+### [How to specify the minSdkVersion in react native project](https://stackoverflow.com/questions/51503218/how-to-specify-the-minsdkversion-in-react-native-project)
+<br/>
+
+## Permissions
+
+The permissions needed for use this module are: ACCESS_FINE_LOCATION, BLUETOOTH, BLUETOOTH_ADMIN. Please check them before. Useful link:
+### [Permissions Android - React Native](https://reactnative.dev/docs/permissionsandroid)
+<br/>
 
 ## Usage
+Example of usage with comments.
 
 ```js
 import EspIdfBleProvisioningRn from "react-native-esp-idf-ble-provisioning-rn";
@@ -70,15 +79,16 @@ EspIdfBleProvisioningRn.provisionNetwork("SSIS", "PASS").then(resp => {
 })
 
 ```
+<br/>
 
 ## Example app
 
 You can find an useful example in this link: [Example app here](https://github.com/manbomb/esp-idf-ble-provisioning-rn/tree/master/example)
-
+<br/><br/>
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
-
+<br/><br/>
 ## License
 
 MIT

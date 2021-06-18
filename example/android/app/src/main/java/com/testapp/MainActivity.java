@@ -1,4 +1,4 @@
-package com.example.reactnativeespidfbleprovisioningrn;
+package com.testapp;
 
 import com.facebook.react.ReactActivity;
 
@@ -10,6 +10,6 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "EspIdfBleProvisioningRnExample";
+    return "testApp";
   }
 }

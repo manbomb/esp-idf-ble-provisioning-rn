@@ -1,6 +1,6 @@
 {
   "name": "react-native-esp-idf-ble-provisioning-rn",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A module to do wifi/custom data provisioning to ESP IDF",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -35,13 +35,13 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/manbomb/react-native-esp-idf-ble-provisioning-rn",
+  "repository": "https://github.com/manbomb/esp-idf-ble-provisioning-rn",
   "author": "Sérgio Avilla <sergiolucasavilladasilva@gmail.com> (https://github.com/manbomb)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/manbomb/react-native-esp-idf-ble-provisioning-rn/issues"
+    "url": "https://github.com/manbomb/esp-idf-ble-provisioning-rn/issues"
   },
-  "homepage": "https://github.com/manbomb/react-native-esp-idf-ble-provisioning-rn#readme",
+  "homepage": "https://github.com/manbomb/esp-idf-ble-provisioning-rn#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

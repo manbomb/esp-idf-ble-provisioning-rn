@@ -7,8 +7,13 @@ import android.bluetooth.le.ScanResult;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 import android.util.Log;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.CharBuffer;
+import java.util.Arrays;
+import java.lang.Byte;
 
 import com.espressif.provisioning.DeviceConnectionEvent;
 import com.espressif.provisioning.ESPConstants;
@@ -25,6 +30,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.ReadableArray;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -188,19 +194,23 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
     }
   };
 
+
   ResponseListener responseCustomDataListener = new ResponseListener() {
     @Override
-    public void onSuccess(byte[] returnData) {
+    public void onSuccess(byte[] returnData){
       WritableMap response = Arguments.createMap();
+      String data = new String(returnData);
       response.putBoolean("success", true);
+      response.putString("data", data);
+      Log.e(TAG, data);
       promiseCustomDataProvision.resolve(response);
     }
 
     @Override
     public void onFailure(Exception e) {
-      Log.e(TAG, "Custom data provision is failed", e);
-      promiseCustomDataProvision.reject("Error in custom data provisioning",
-        "Custom data provision is failed", e);
+      Log.e(TAG, "Custom data provision has failed", e);
+      promiseCustomDataProvision.reject(e.getMessage(),
+        "Custom data provision failed", e);
     }
   };
 
@@ -293,14 +303,37 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void sendCustomData(String customEndPoint, String customData, Promise promise) {
+    // React-Native is programmed in C apparently, and in C trailing binary zeros are truncated
+    // from strings. Be aware; hence sendCustomDataWithByteData below to articulate each byte when needed
     try {
       provisionManager.getEspDevice().sendDataToCustomEndPoint(customEndPoint,
-        customData.getBytes(),
+        customData.getBytes("UTF-16"), // strings from React-Native to Java are UTF-16
         responseCustomDataListener);
       this.promiseCustomDataProvision = promise;
     } catch (Exception e) {
       Log.e(TAG, "Custom data provision error", e);
-      promise.reject("Custom data provision error",
+      promise.reject("Custom data provision error, " + e.getMessage(),
+        "An error has occurred in init of provisioning of custom data", e);
+    }
+  }
+
+
+  @ReactMethod
+  public void sendCustomDataWithByteData(String customEndPoint, ReadableArray customData, Promise promise) {
+    // customData must be an array of strings, with each string being a hexidecimal value 00-FF, ie ["52", "0"]
+    int length = customData.size();
+    byte[] output = new byte[length];
+    for (int i = 0; i < length; i++)
+        output[i] = (byte)Integer.parseInt(customData.getString(i), 16);
+    String string = new String(output);
+    try {
+      provisionManager.getEspDevice().sendDataToCustomEndPoint(customEndPoint,
+        output,
+        responseCustomDataListener);
+      this.promiseCustomDataProvision = promise;
+    } catch (Exception e) {
+      Log.e(TAG, "Custom data provision error", e);
+      promise.reject("Custom data provision with bytes error, " + e.getMessage(),
         "An error has occurred in init of provisioning of custom data", e);
     }
   }
@@ -320,8 +353,6 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
   public void onEvent(DeviceConnectionEvent event) {
 
     Log.e(TAG, "ON Device Prov Event RECEIVED : " + event.getEventType());
-    //handler.removeCallbacks(disconnectDeviceTask);
-
     switch (event.getEventType()) {
       case ESPConstants.EVENT_DEVICE_CONNECTED:
         Log.e(TAG, "Device Connected Event Received");

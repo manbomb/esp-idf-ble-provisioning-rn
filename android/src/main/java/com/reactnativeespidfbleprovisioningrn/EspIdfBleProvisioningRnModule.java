@@ -325,7 +325,6 @@ public class EspIdfBleProvisioningRnModule extends ReactContextBaseJavaModule {
     byte[] output = new byte[length];
     for (int i = 0; i < length; i++)
         output[i] = (byte)Integer.parseInt(customData.getString(i), 16);
-    String string = new String(output);
     try {
       provisionManager.getEspDevice().sendDataToCustomEndPoint(customEndPoint,
         output,

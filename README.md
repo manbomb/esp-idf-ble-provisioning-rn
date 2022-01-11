@@ -71,6 +71,26 @@ EspIdfBleProvisioningRn.sendCustomData("custom-endpoint", "data").then(resp => {
     console.error(e)
 })
 
+// This method is used when is required to provision custom data to custom endpoints
+// with the special cavieat that React-Native's bridges to Native can destroy binary data
+// encoded as UTF-8 strings. See Example for details. Convert string to JS's Uint8Array, then to an array 
+// of strings where each string has the hexidecimal representation of its corresponding byte
+// there is a walk through in ./example/App.js
+EspIdfBleProvisioningRn.sendCustomDataWithByteData("custom-endpoint",["0", "FF", "52"]).then(resp => {
+    // this is worth tweaking, but I have found that the data response
+    // is wrapped in some other packaging I have to strip away from
+    // the beginning and then JSON parsing works. The Native Backend manages
+    // encryption at the session level. ESPRESSIF's libraries default to security_1 (as opposed to 0)
+    const data = JSON.parse(resp.data.substring(8));
+    ToastAndroid.show(
+        'Custom data with byte accuracy provisioned successfully',
+        ToastAndroid.LONG,
+    );
+    console.log(data); // data, likely in 
+}).catch(e => {
+    console.error(e)
+})
+
 // This method is used to provision new wifi credentials on the device
 EspIdfBleProvisioningRn.provisionNetwork("SSIS", "PASS").then(resp => {
     // resp will be {"success":true}
